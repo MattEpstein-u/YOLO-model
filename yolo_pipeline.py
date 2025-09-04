@@ -8,12 +8,28 @@ def convert_fiftyone_to_yolo():
     Loads the fiftyone quickstart dataset and exports it in YOLO format.
     """
     dataset = foz.load_zoo_dataset("quickstart")
+    
+    # Explicitly define train and validation splits
+    train_dataset = dataset.match_tags("train")
+    val_dataset = dataset.match_tags("validation")
+
     export_dir = "yolo_dataset"
-    dataset.export(
+    
+    # Export the training and validation splits
+    train_dataset.export(
         export_dir=export_dir,
         dataset_type=fo.types.YOLOv5Dataset,
         label_field="ground_truth",
+        split="train"
     )
+    
+    val_dataset.export(
+        export_dir=export_dir,
+        dataset_type=fo.types.YOLOv5Dataset,
+        label_field="ground_truth",
+        split="val"
+    )
+
     return os.path.join(export_dir, "dataset.yaml")
 
 def train_yolo_model(data_yaml_path):
